@@ -1,4 +1,4 @@
-package WymianaWalut;
+package com.kuchar.currency_exchange_office;
 
 import java.util.List;
 

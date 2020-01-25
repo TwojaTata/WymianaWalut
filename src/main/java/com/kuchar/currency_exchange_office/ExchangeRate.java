@@ -1,4 +1,4 @@
-package WymianaWalut;
+package com.kuchar.currency_exchange_office;
 
 public class ExchangeRate {
     private final Double rate;

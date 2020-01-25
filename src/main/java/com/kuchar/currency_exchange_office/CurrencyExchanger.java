@@ -1,4 +1,4 @@
-package WymianaWalut;
+package com.kuchar.currency_exchange_office;
 
 import java.util.*;
 
@@ -12,8 +12,6 @@ public class CurrencyExchanger {
     public CurrencyExchanger(double buyingCommission, double sellingCommission) {
         this.buyingCommission = buyingCommission;
         this.sellingCommission = sellingCommission;
-        listOfAvailableCurrencies.add(new ExchangeRate("USD", 1.0));
-
     }
 
     public void addCurrencyExchangeRate(ExchangeRate exchangeRate) throws CurrencyAlreadyAddedException {
@@ -28,15 +26,24 @@ public class CurrencyExchanger {
                            Double amountOfMoney,
                            String targetCurrency,
                            TransactionType transactionType) throws CurrencyNotSupportedException {
-        if (!nameOfCurrency.toLowerCase().equals("usd")) {
-            validate(nameOfCurrency.toLowerCase(), amountOfMoney, targetCurrency);
-        }
+
+        validate(nameOfCurrency.toLowerCase(), amountOfMoney, targetCurrency);
         double commission = computeCommission(transactionType, targetCurrency, amountOfMoney);
-        if (nameOfCurrency.toLowerCase().equals("USD")) {
-            return exchangeToUSDollar(targetCurrency, amountOfMoney) - commission;
-        }
+
         return exchangeUSDollarToTargetCurrency
-                (targetCurrency, exchangeToUSDollar(nameOfCurrency, amountOfMoney));
+                (targetCurrency, exchangeToUSDollar(nameOfCurrency, amountOfMoney)) - commission;
+    }
+
+    public List<ExchangeRate> getListOfAvailableCurrencies() {
+        return listOfAvailableCurrencies;
+    }
+
+    public double getSellingCommission() {
+        return sellingCommission;
+    }
+
+    public double getBuyingCommission() {
+        return buyingCommission;
     }
 
     private Double computeCommission(TransactionType transactionType, String targetCurrency, Double amountOfMoney) {
@@ -52,27 +59,18 @@ public class CurrencyExchanger {
     }
 
     private Double exchangeToUSDollar(String targetCurrency, Double amountOfMoney) {
+        System.out.println(targetCurrency.toLowerCase());
+        exchangeRatesToUSDollar.forEach((k, v) -> System.out.println(k + v));
         return exchangeRatesToUSDollar.get(targetCurrency.toLowerCase()) / amountOfMoney;
     }
 
-    private void validate(String nameOfCurrency, Double amountOfMoney, String targetCurrency) throws CurrencyNotSupportedException {
-        if (!exchangeRatesToUSDollar.containsKey(nameOfCurrency) ||
+    private void validate(String nameOfCurrency, Double amountOfMoney, String targetCurrency)
+            throws CurrencyNotSupportedException {
+        if (!exchangeRatesToUSDollar.containsKey(nameOfCurrency.toLowerCase()) ||
                 !exchangeRatesToUSDollar.containsKey(targetCurrency.toLowerCase())) {
-            throw new CurrencyNotSupportedException("Exchange rate of " + nameOfCurrency + "is not specified");
+            throw new CurrencyNotSupportedException("Exchange rate of " + nameOfCurrency + " is not specified");
         } else if (amountOfMoney < 0) {
             throw new IllegalArgumentException("Amount of money can't be negative");
         }
-    }
-
-    public List<ExchangeRate> getListOfAvailableCurrencies() {
-        return listOfAvailableCurrencies;
-    }
-
-    public double getSellingCommission() {
-        return sellingCommission;
-    }
-
-    public double getBuyingCommission(){
-        return buyingCommission;
     }
 }
